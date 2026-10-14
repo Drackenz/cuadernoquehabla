@@ -137,6 +137,23 @@ def test_rechaza_dificultad_fuera_de_rango(datos_apunte):
         Apunte.model_validate(datos_apunte)
 
 
+def test_apunte_se_convierte_a_markdown_completo(apunte):
+    markdown = apunte.a_markdown()
+
+    assert "# La célula" in markdown
+    assert "**Materia:** Ciencias" in markdown
+    assert "**Dificultad:** ⭐⭐⭐ (3/5)" in markdown
+    assert "## Resumen\n\nLa célula es la unidad básica de los seres vivos." in markdown
+    assert "- **Concepto 0:** Explicación del concepto." in markdown
+    assert "### 1. Pregunta 0\n\n**Respuesta:** Respuesta 0" in markdown
+    assert "### 5. Pregunta 4\n\n**Respuesta:** Respuesta 4" in markdown
+    assert "### 1. ¿Cuál es la respuesta correcta?" in markdown
+    assert "- a) Primera" in markdown
+    assert "- b) Segunda **(correcta)**" in markdown
+    assert "- c) Tercera" in markdown
+    assert "- d) Cuarta" in markdown
+
+
 def test_calificar_cuenta_todas_las_respuestas_correctas(apunte):
     assert calificar(apunte, {0: 1, 1: 2, 2: 3}) == (3, 3)
 

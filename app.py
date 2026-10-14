@@ -45,34 +45,6 @@ def analizar_imagen(imagen):
         st.session_state["version_examen"] += 1
 
 
-def crear_guia_markdown(apunte) -> str:
-    secciones = [
-        f"# {apunte.titulo}",
-        f"**Materia:** {apunte.materia}",
-        f"**Dificultad:** {'⭐' * apunte.dificultad} ({apunte.dificultad}/5)",
-        "## Resumen",
-        apunte.resumen,
-        "## Conceptos",
-    ]
-    secciones.extend(
-        f"- **{concepto.termino}:** {concepto.explicacion}"
-        for concepto in apunte.conceptos
-    )
-    secciones.append("## Tarjetas de repaso")
-    for tarjeta in apunte.tarjetas:
-        secciones.extend(
-            [f"### {tarjeta.pregunta}", f"**Respuesta:** {tarjeta.respuesta}"]
-        )
-    secciones.append("## Examen")
-    for indice, pregunta in enumerate(apunte.examen, start=1):
-        secciones.append(f"### {indice}. {pregunta.enunciado}")
-        secciones.extend(
-            f"- {opcion}{' (correcta)' if indice_opcion == pregunta.correcta else ''}"
-            for indice_opcion, opcion in enumerate(pregunta.opciones)
-        )
-    return "\n\n".join(secciones)
-
-
 st.title("📓 Mi cuaderno habla")
 st.write("Tomá una foto de tu cuaderno o subí una imagen para crear tu guía de estudio.")
 
@@ -155,7 +127,7 @@ if apunte is not None:
 
     st.download_button(
         "Descargar guía de estudio",
-        data=crear_guia_markdown(apunte),
+        data=apunte.a_markdown(),
         file_name="guia_de_estudio.md",
         mime="text/markdown",
     )

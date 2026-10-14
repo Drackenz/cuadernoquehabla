@@ -47,6 +47,36 @@ class Apunte(BaseModel):
     examen: list[Pregunta] = Field(description="Preguntas de opción múltiple para evaluar la comprensión del contenido.")
     dificultad: int = Field(description="Nivel de dificultad del contenido, expresado como un número entero.")
 
+    def a_markdown(self) -> str:
+        secciones = [
+            f"# {self.titulo}",
+            f"**Materia:** {self.materia}",
+            f"**Dificultad:** {'⭐' * self.dificultad} ({self.dificultad}/5)",
+            "## Resumen",
+            self.resumen,
+            "## Conceptos",
+        ]
+        secciones.extend(
+            f"- **{concepto.termino}:** {concepto.explicacion}"
+            for concepto in self.conceptos
+        )
+        secciones.append("## Tarjetas de repaso")
+        for indice, tarjeta in enumerate(self.tarjetas[:5], start=1):
+            secciones.extend(
+                [
+                    f"### {indice}. {tarjeta.pregunta}",
+                    f"**Respuesta:** {tarjeta.respuesta}",
+                ]
+            )
+        secciones.append("## Examen")
+        for indice, pregunta in enumerate(self.examen, start=1):
+            secciones.append(f"### {indice}. {pregunta.enunciado}")
+            secciones.extend(
+                f"- {letra}) {opcion}{' **(correcta)**' if indice_opcion == pregunta.correcta else ''}"
+                for indice_opcion, (letra, opcion) in enumerate(zip("abcd", pregunta.opciones))
+            )
+        return "\n\n".join(secciones)
+
     @field_validator("dificultad")
     @classmethod
     def validar_dificultad(cls, dificultad: int) -> int:
