@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+.venv/
+__pycache__/
+.pytest_cache/
+.streamlit/secrets.toml
+*.py[cod]
